@@ -1,0 +1,61 @@
+distance(1..50).
+
+%LOCK
+next(0)|next(1)|next(2)|next(3).
+
+nextCell(X,Y):-lock(Lx,Y),next(0),X=Lx+1,inPath(X,Y).
+nextCell(X,Y):-lock(Lx,Y),next(1),X=Lx-1,inPath(X,Y).
+nextCell(X,Y):-lock(X,Ly),next(2),Y=Ly+1,inPath(X,Y).
+nextCell(X,Y):-lock(X,Ly),next(3),Y=Ly-1,inPath(X,Y).
+
+empty(X,Y):- inPath(X,Y),not coin(X,Y).
+
+distanceLockNextGem(D):-nextCell(Xl,Yl),gem(Xg,Yg),mindistances(Xl,Yl,Xg,Yg,D),D>0.
+distanceLockNextChangeIdentity(D):-nextCell(Xl,Yl),changeidentity(Xg,Yg),mindistances(Xl,Yl,Xg,Yg,D),D>0.
+
+distanceLockNextClosestCoin(D,Id):-nextCell(Xl,Yl),closestCoin(Xg,Yg),mindistances(Xl,Yl,Xg,Yg,D),D>0,Id=Xg+Yg.
+minDistanceLockNextClosestCoin(MD):-#min{D:distanceLockNextClosestCoin(D,_)}=MD,distance(MD).
+
+distanceLockNextPoliceMan(D,Pm):-nextCell(Xl,Yl),policeman(Xp,Yp,Pm),mindistances(Xl,Yl,Xp,Yp,D),D>0.
+minDistanceLockNextPoliceMan(MD):-#min{D:distanceLockNextPoliceMan(D,_)}=MD,distance(MD).
+
+:-#count{X,Y:nextCell(X,Y)}!=1.
+
+:~minDistanceLockNextClosestCoin(MD).[MD@8]
+
+
+:~minDistanceLockNextPoliceMan(MD),Min=50-MD,not powerup.[Min@10] 
+:~minDistanceLockNextPoliceMan(MD),powerup.[MD@7]
+
+
+:~distanceLockNextChangeIdentity(D).[D@9]
+:~distanceLockNextGem(D).[D@9]
+:~nextCell(X,Y),empty(X,Y).[10@10]
+:~previous_action(X),next(Y),X!=Y.[1@1]
+
+
+%POLICEMAN
+
+nextS(0,P)|nextS(1,P)|nextS(2,P)|nextS(3,P):-policeman(_,_,P).
+nextCellS(X,Y,Pm):-policeman(Px,Y,Pm),X=Px+1,inPath(X,Y),nextS(0,Pm).
+nextCellS(X,Y,Pm):-policeman(Px,Y,Pm),X=Px-1,inPath(X,Y),nextS(1,Pm).
+nextCellS(X,Y,Pm):-policeman(X,Py,Pm),Y=Py+1,inPath(X,Y),nextS(2,Pm).
+nextCellS(X,Y,Pm):-policeman(X,Py,Pm),Y=Py-1,inPath(X,Y),nextS(3,Pm).
+
+distancePoliceManLock(D,Pm):-nextCellS(Xl,Yl,Pm),lock(Xp,Yp),mindistances(Xl,Yl,Xp,Yp,D),D>0.
+minDistancePoliceManLock(MD,Pm):-#min{D:distancePoliceManLock(D,Pm)}=MD,distance(MD),policeman(_,_,Pm).
+
+%NON E POSSIBILE CHE IL NUMERO DI POLIZIOTTI, IN NEXTCELL NON SIA 4.
+%:-#count{Pm:nextCellS(_,_,Pm)}!=4.
+
+
+%MODO ANALOGO
+:-policeman(_,_,Pm),#count{Pm:nextCellS(_,_,Pm)}!=1.
+
+:~distancePoliceManLock(D,_).[D@11] 
+
+
+
+%Per aumentare la probabilità di beccare Lock, preferiamo andare dove non è vuoto.
+%:~nextCellS(X,Y,Pm),empty(X,Y).[1@11]
+:~previousAction(X,Y),nextS(Z,X),Y!=Z.[1@1]

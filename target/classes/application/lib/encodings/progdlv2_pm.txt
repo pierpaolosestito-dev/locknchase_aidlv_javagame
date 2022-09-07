@@ -1,0 +1,35 @@
+
+
+
+
+
+
+
+
+
+
+
+nextS(0,P)|nextS(1,P)|nextS(2,P)|nextS(3,P):-policeman(_,_,P).
+distance(1..50).
+nextCellS(X,Y,Pm):-policeman(Px,Y,Pm),X=Px+1,inPath(X,Y),nextS(0,Pm).
+nextCellS(X,Y,Pm):-policeman(Px,Y,Pm),X=Px-1,inPath(X,Y),nextS(1,Pm).
+nextCellS(X,Y,Pm):-policeman(X,Py,Pm),Y=Py+1,inPath(X,Y),nextS(2,Pm).
+nextCellS(X,Y,Pm):-policeman(X,Py,Pm),Y=Py-1,inPath(X,Y),nextS(3,Pm).
+
+empty(X,Y):- inPath(X,Y),not coin(X,Y).
+
+distancePoliceManLock(D,Pm):-nextCellS(Xl,Yl,Pm),lock(Xp,Yp),mindistances(Xl,Yl,Xp,Yp,D).
+minDistancePoliceManLock(MD,Pm):-#min{D:distancePoliceManLock(D,Pm)}=MD,distance(MD),policeman(_,_,Pm).
+
+%NON E POSSIBILE CHE IL NUMERO DI POLIZIOTTI, IN NEXTCELL NON SIA 4.
+%:-#count{Pm:nextCell(_,_,Pm)}!=4.
+
+
+%MODO ANALOGO
+:-policeman(_,_,Pm),#count{Pm:nextCellS(_,_,Pm)}!=1.
+
+:~distancePoliceManLock(D,_).[D@3]
+
+%Per aumentare la probabilità di beccare Lock, preferiamo andare dove non è vuoto.
+:~nextCellS(X,Y,Pm),empty(X,Y).[1@2]
+:~previousAction(X,Y),nextS(Z,X),Y!=Z.[1@1]

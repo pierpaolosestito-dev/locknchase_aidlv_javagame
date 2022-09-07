@@ -1,0 +1,27 @@
+
+
+distance(1..50).
+
+next(0)|next(1)|next(2)|next(3).
+nextCell(X,Y):-lock(Lx,Y),next(0),X=Lx+1,inPath(X,Y).
+nextCell(X,Y):-lock(Lx,Y),next(1),X=Lx-1,inPath(X,Y).
+nextCell(X,Y):-lock(X,Ly),next(2),Y=Ly+1,inPath(X,Y).
+nextCell(X,Y):-lock(X,Ly),next(3),Y=Ly-1,inPath(X,Y).
+
+empty(X,Y):- inPath(X,Y),not coin(X,Y).
+%nextCell(Xl,Yl),
+
+%distanceLockNextGem(D):-nextCell(Xl,Yl),gem(Xg,Yg),mindistances(Xl,Yl,Xg,Yg,D).
+%distanceLockNextChangeIdentity(D):-nextCell(Xl,Yl),changeidentity(Xg,Yg),mindistances(Xl,Yl,Xg,Yg,D).
+
+distanceLockNextPoliceMan(D,Pm):-nextCell(Xl,Yl),policeman(Xp,Yp,Pm),mindistances(Xl,Yl,Xp,Yp,D).
+minDistanceLockNextPoliceMan(MD):-#min{D:distanceLockNextPoliceMan(D,_)}=MD,distance(MD).
+
+:-#count{X,Y:nextCell(X,Y)}!=1.
+
+:~minDistanceLockNextPoliceMan(MD),Min=50-MD,not powerup.[Min@7]
+:~minDistanceLockNextPoliceMan(MD),powerup.[MD@6]
+:~nextCell(X,Y), not gem(X,Y).[1@6]
+:~nextCell(X,Y),empty(X,Y).[1@5]
+:~nextCell(X,Y),closestCoin(X,Y,D).[1@4]
+:~previous_action(X),next(Y),X!=Y.[1@3]

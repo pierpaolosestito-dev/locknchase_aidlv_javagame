@@ -1,0 +1,15 @@
+application\algorithm\BFSCalculator.class
+application\model\Poliziotto.class
+application\view\Home.class
+application\model\Coordinates.class
+application\model\GameObject.class
+application\Main.class
+application\ai\facts\Coin.class
+application\view\GamePanel.class
+application\ai\facts\inPath.class
+application\algorithm\QItem.class
+application\ai\facts\MinDistances.class
+application\view\MainFrame.class
+.netbeans_automatic_build
+application\model\Game.class
+application\model\Lock.class
